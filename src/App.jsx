@@ -227,7 +227,7 @@ export default function App() {
     <div className="app">
       <header>
         <h1>📸 Photo Booth</h1>
-        <p>Take four photos and get a black &amp; white photo strip. Built with React + Vite.</p>
+        <p>Take four photos and get a black &amp; white photo strip</p>
       </header>
 
       <main>
