@@ -1,0 +1,226 @@
+* { box-sizing: border-box; }
+:root {
+  --paper: #f6f3ee;
+  --ink: #111;
+  --muted: #7a7a7a;
+  --camera: #1a1a1a;
+  --camera-edge: #000;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: radial-gradient(1200px 800px at 20% 10%, #ffffff, #f3efe9 40%, #e9e4dc 70%, #dfd9cf 100%);
+  color: var(--ink);
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+header h1 {
+  margin: 8px 0 0;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+header p { color: var(--muted); margin-top: 6px; }
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+.preview {
+  position: relative;
+  background: var(--paper);
+  border: 2px solid #000;
+  box-shadow: 0 8px 0 #000, 0 14px 24px rgba(0,0,0,.15);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+/* Faux camera with a video "lens" and a slot for the strip */
+.camera {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  display: grid;
+  place-items: center;
+  margin-bottom: 10px;
+}
+.camera-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #222 0%, var(--camera) 60%, #1c1c1c 100%);
+  border: 3px solid var(--camera-edge);
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 2px #2a2a2a, inset 0 10px 40px rgba(255,255,255,.05), 0 12px 30px rgba(0,0,0,.2);
+  overflow: hidden;
+}
+video {
+  position: absolute;
+  width: 74%;
+  height: 74%;
+  top: 12%;
+  left: 13%;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 2px solid #000;
+  background: #000;
+  box-shadow: 0 10px 40px rgba(0,0,0,.45);
+}
+.lens-gloss {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 120% at 0% 0%, rgba(255,255,255,.12), transparent 40%);
+  pointer-events: none;
+}
+.slot {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 6%;
+  width: 70%;
+  height: 16px;
+  background: #0e0e0e;
+  border: 2px solid #000;
+  border-radius: 6px;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.06), inset 0 -2px 0 rgba(0,0,0,.7);
+  z-index: 4;
+}
+
+/* The strip canvas is positioned behind the slot and animates downward */
+.strip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(-80%);
+  top: calc(100% - 10%); /* start just inside the body */
+  width: 40%;
+  max-width: 420px;
+  border-radius: 18px;
+  background: #222;
+  border: 2px solid #000;
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+  z-index: 3; /* behind the slot to look like it emerges from inside */
+  opacity: 0; /* hidden until we animate */
+}
+
+/* trigger class set by JS */
+.strip.eject {
+  animation: eject 1.9s ease-out forwards;
+}
+@keyframes eject {
+  0% {
+    transform: translateX(-50%) translateY(-90%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  65% {
+    transform: translateX(-50%) translateY(10%);
+  }
+  85% {
+    transform: translateX(-50%) translateY(0%);
+  }
+  100% {
+    transform: translateX(-50%) translateY(2%);
+  }
+}
+
+.camera-foot {
+  position: absolute;
+  bottom: -14px;
+  width: 70%;
+  height: 18px;
+  background: #0f0f0f;
+  border: 2px solid #000;
+  border-radius: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 6px 18px rgba(0,0,0,.35);
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+button {
+  appearance: none;
+  border: 2px solid #000;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #000;
+  transition: transform .06s ease, box-shadow .06s ease, opacity .2s;
+}
+button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #000; }
+button:active { transform: translateY(0); box-shadow: 0 2px 0 #000; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.countdown {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 120px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 6px 0 #000, 0 14px 40px rgba(0,0,0,.5);
+  background: rgba(0,0,0,.25);
+  border-radius: 18px;
+}
+
+.flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+}
+.flash.blink {
+  animation: flash 280ms ease-out;
+}
+@keyframes flash {
+  0%   { opacity: 0; }
+  10%  { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+.hidden { display: none !important; }
+
+.captures, .strip-output {
+  background: var(--paper);
+  border: 2px solid #000;
+  box-shadow: 0 8px 0 #000, 0 14px 24px rgba(0,0,0,.15);
+  border-radius: 18px;
+  padding: 16px;
+}
+.captures h2, .strip-output h2 { margin: 0 0 12px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+.grid canvas {
+  width: 100%;
+  border-radius: 14px;
+  background: #111;
+  border: 2px solid #000;
+}
+
+footer { margin-top: 24px; color: var(--muted); }
+
+@media (max-width: 980px) {
+  main { grid-template-columns: 1fr; }
+  .strip { width: 60%; }
+}
